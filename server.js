@@ -5,7 +5,7 @@ var Client = require('node-rest-client').Client
 var i2cBus = require('i2c-bus')
 var ws281x = require('rpi-ws281x-native')
 var wpi = require("node-wiring-pi")
-var stepperWiringPi = require("./stepper-wiringpi")
+var wpiStepper = require("wpi-stepper")
 
 var client = new Client()
 wpi.setup('gpio')
@@ -93,7 +93,7 @@ var pin1 = 17
 var pin2 = 27
 var pin3 = 22
 var pin4 = 23
-var motor1 = stepperWiringPi.setup(200, pin1, pin2, pin3, pin4)
+var motor1 = wpiStepper.setup(200, pin1, pin2, pin3, pin4)
 motor1.setSpeed(200)
 
 /* --- Common functions ------------------------------- */
