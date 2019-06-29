@@ -2,13 +2,9 @@
 
 var express = require('express')
 var Client = require('node-rest-client').Client
-var i2cBus = require('i2c-bus')
 var ws281x = require('rpi-ws281x-native')
 var wpi = require("node-wiring-pi")
-var wpiStepper = require("wpi-stepper")
 
-var client = new Client()
-wpi.setup('gpio')
 
 /* --- State variables ------------------------------- */
 
@@ -74,6 +70,9 @@ for (index = 0; index < 19; index++) {
 
 /* --- Setup subsystems ------------------------------- */
 
+var client = new Client()
+wpi.setup('gpio')
+
 // Setup web server
 var app = express()
 app.set('port', (process.env.PORT || 3002))
@@ -89,12 +88,14 @@ wpi.pinMode(bottomsensorpin, wpi.INPUT)
 wpi.pinMode(topsensorpin, wpi.INPUT)
 
 // Setup stepper motor for flag
-var pin1 = 17
-var pin2 = 27
-var pin3 = 22
-var pin4 = 23
-var motor1 = wpiStepper.setup(200, pin1, pin2, pin3, pin4)
-motor1.setSpeed(200)
+let spec = {
+  address: 0x60,
+  steppers: [{ W1: 'M1', W2: 'M2' }]
+};
+var motorHat = require('motor-hat')(spec)
+motorHat.init();
+motorHat.steppers[0].setSteps(200);
+motorHat.steppers[0].setSpeed({ rpm: 100 });
 
 /* --- Common functions ------------------------------- */
 
@@ -189,7 +190,7 @@ function readTopPositionFlagSensor() {
 
 function calibrateFlagBottom() {
   if (readBottomPositionFlagSensor() == 0) {
-    motor1.step(stepRange, function () {
+    motorHat.steppers[0].step('back', stepRange, (err, result) => {
       if (readBottomPositionFlagSensor() == 0) {
         calibrateFlagBottom();
       }
@@ -207,7 +208,7 @@ function calibrateFlagBottom() {
 
 function calibrateFlagTop() {
   if (readTopPositionFlagSensor() == 0) {
-    motor1.step(-stepRange, function () {
+    motorHat.steppers[0].step('fwd', stepRange, (err, result) => {
       currentFlagPosition += stepRange
       if (readTopPositionFlagSensor() == 0) {
         calibrateFlagTop()
@@ -233,7 +234,7 @@ function MoveFlagToPosition() {
       if (steps < -stepRange) {
         steps = -stepRange
       }
-      motor1.step(steps, function () {
+      motorHat.steppers[0].step('fwd', -steps, (err, result) => {
         currentFlagPosition -= steps;
         if (readTopPositionFlagSensor() == 0) {
           MoveFlagToPosition()
@@ -247,7 +248,7 @@ function MoveFlagToPosition() {
       if (steps > stepRange) {
         steps = stepRange
       }
-      motor1.step(steps, function () {
+      motorHat.steppers[0].step('back', steps, (err, result) => {
         currentFlagPosition -= steps
         if (readBottomPositionFlagSensor() == 0) {
           MoveFlagToPosition()
