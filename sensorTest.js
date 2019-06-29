@@ -5,7 +5,6 @@ var wpi = require("node-wiring-pi")
 
 /* --- Setup subsystems ------------------------------- */
 
-var client = new Client()
 wpi.setup('gpio')
 
 // Setup sensors for detecting flag at bottom
