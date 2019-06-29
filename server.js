@@ -190,7 +190,7 @@ function readTopPositionFlagSensor() {
 
 function calibrateFlagBottom() {
   if (readBottomPositionFlagSensor() == 0) {
-    motorHat.steppers[0].step('back', stepRange, (err, result) => {
+    motorHat.steppers[0].step('fwd', stepRange, (err, result) => {
       if (readBottomPositionFlagSensor() == 0) {
         calibrateFlagBottom();
       }
@@ -208,7 +208,7 @@ function calibrateFlagBottom() {
 
 function calibrateFlagTop() {
   if (readTopPositionFlagSensor() == 0) {
-    motorHat.steppers[0].step('fwd', stepRange, (err, result) => {
+    motorHat.steppers[0].step('back', stepRange, (err, result) => {
       currentFlagPosition += stepRange
       if (readTopPositionFlagSensor() == 0) {
         calibrateFlagTop()
@@ -234,7 +234,7 @@ function MoveFlagToPosition() {
       if (steps < -stepRange) {
         steps = -stepRange
       }
-      motorHat.steppers[0].step('fwd', -steps, (err, result) => {
+      motorHat.steppers[0].step('back', -steps, (err, result) => {
         currentFlagPosition -= steps;
         if (readTopPositionFlagSensor() == 0) {
           MoveFlagToPosition()
@@ -248,7 +248,7 @@ function MoveFlagToPosition() {
       if (steps > stepRange) {
         steps = stepRange
       }
-      motorHat.steppers[0].step('back', steps, (err, result) => {
+      motorHat.steppers[0].step('fwd', steps, (err, result) => {
         currentFlagPosition -= steps
         if (readBottomPositionFlagSensor() == 0) {
           MoveFlagToPosition()
