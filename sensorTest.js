@@ -52,7 +52,6 @@ function readSensors() {
   console.log("Bot: ", bottomPosition)
 }
 
-reportUrl()
 setInterval(function () {
   readSensors()
 }, 500)
