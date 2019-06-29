@@ -95,7 +95,7 @@ let spec = {
 var motorHat = require('motor-hat')(spec)
 motorHat.init();
 motorHat.steppers[0].setSteps(200);
-motorHat.steppers[0].setSpeed({ rpm: 200 });
+motorHat.steppers[0].setSpeed({ rpm: 400 });
 
 /* --- Common functions ------------------------------- */
 
